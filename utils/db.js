@@ -1,5 +1,5 @@
-// import { MongoClient } from 'mongodb';
-const MongoClient = require('mongodb').MongoClient;
+import { MongoClient } from 'mongodb';
+// const MongoClient = require('mongodb').MongoClient;
 
 class DBClient {
   constructor() {
@@ -60,4 +60,4 @@ class DBClient {
 }
 
 const dbClient = new DBClient();
-module.exports = dbClient;
+export default dbClient;
