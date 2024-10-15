@@ -1,0 +1,33 @@
+import sha1 from 'sha1';
+import dbClient from '../utils/db';
+
+const UsersController = {
+  async postNew(req, res) {
+    if (!req.body.email) {
+      return res.status(400).json({ error: 'Missing email' });
+    }
+    if (!req.body.password) {
+      return res.status(400).json({ error: 'Missing password' });
+    }
+
+    // getting collection users
+    const users = await dbClient.db.collection('users');
+
+    const exists = await users.findOne({ email: req.body.email });
+    if (exists) {
+      return res.status(400).json({ error: 'Already exist' });
+    }
+
+    const inserRes = await users.insertOne({
+      email: req.body.email,
+      password: sha1(req.body.password),
+    });
+
+    return res.status(201).json({
+      id: inserRes.insertedId.toString(),
+      email: inserRes.email,
+    });
+  },
+};
+
+export default UsersController;
