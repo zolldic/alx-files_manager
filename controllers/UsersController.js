@@ -3,10 +3,11 @@ import dbClient from '../utils/db';
 
 const UsersController = {
   async postNew(req, res) {
-    if (!req.body.email) {
+    const { email, password } = req.body;
+    if (!email) {
       return res.status(400).json({ error: 'Missing email' });
     }
-    if (!req.body.password) {
+    if (!password) {
       return res.status(400).json({ error: 'Missing password' });
     }
 
@@ -25,7 +26,7 @@ const UsersController = {
 
     return res.status(201).json({
       id: inserRes.insertedId.toString(),
-      email: inserRes.email,
+      email,
     });
   },
 };
