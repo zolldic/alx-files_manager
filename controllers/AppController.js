@@ -7,7 +7,7 @@ const AppController = {
       redis: redisClient.isAlive(),
       db: dbClient.isAlive(),
     };
-    res.json(status);
+    res.status(200).json(status);
   },
   async getStats(req, res) {
     const usersCount = await dbClient.nbUsers();
