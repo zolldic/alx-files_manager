@@ -1,13 +1,13 @@
 import sha1 from 'sha1';
 import { v4 as uuidv4 } from 'uuid';
+import { ObjectId } from 'mongodb';
 import dbClient from '../utils/db';
 import redisClient from '../utils/redis';
 
 const AuthController = {
   async getConnect(req, res) {
-    const buffer = new Buffer(req.headers.authorization.split(' ')[1], 'base64')
-      .toString()
-      .split(':');
+    const base64 = req.headers.authorization.split(' ')[1];
+    const buffer = Buffer.from(base64, 'base64').toString('ascii').split(':');
 
     if (!buffer) {
       return res.status(401).json({ error: 'Unauthorized' });
@@ -23,20 +23,29 @@ const AuthController = {
       return res.status(401).json({ error: 'Unauthorized' });
     }
 
-    /**
-     * Use this key for storing in Redis (by using the redisClient
-     * create previously) the user ID for 24 hours
-     * Return this token: { "token": "155342df-2399-41da-9e8c-458b6ac52a0c" }
-     * with a status code 200
-     */
-
     const uid = uuidv4();
-    const key = `auth_${uid}`;
-    await redisClient.set('userId', key, 86400);
+    await redisClient.set(`auth_${uid}`, user._id.toString(), 86400);
     return res.status(200).json({ token: uid });
   },
-  async getDisconnect(req, res) {},
-  async getMe(req, res) {},
+
+  async getDisconnect(req, res) {
+    const token = req.headers['x-token'];
+    if (!token) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    const userId = await redisClient.get(`auth_${token}`);
+    if (!userId) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    const user = await dbClient.db.collection('users').findOne({
+      _id: ObjectId(userId),
+    });
+    if (!user) return res.status(401).json({ error: 'Unauthorized' });
+    await redisClient.del(`auth_${token}`);
+    return res.status(204);
+  },
 };
 
 export default AuthController;

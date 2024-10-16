@@ -8,6 +8,5 @@ export default function apps(app) {
   app.use('/users/me', UsersController.getMe);
   app.use('/users', UsersController.postNew);
   app.use('/connect', AuthController.getConnect);
-
-  // app.use('/disconnect', AuthController.getDisconnect);
+  app.use('/disconnect', AuthController.getDisconnect);
 }
