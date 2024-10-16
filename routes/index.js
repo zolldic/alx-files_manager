@@ -2,6 +2,7 @@ import AppController from '../controllers/AppController';
 import UsersController from '../controllers/UsersController';
 import AuthController from '../controllers/AuthController';
 import FileController from '../controllers/FileController';
+import { FileEnumerator } from 'eslint/use-at-your-own-risk';
 
 export default function apps(app) {
   app.use('/status', AppController.getStatus);
@@ -13,4 +14,6 @@ export default function apps(app) {
 
   // Files
   app.use('/files', FileController.postUpload);
+  app.use('/files/:id', FileController.getShow);
+  app.use('files', FileController.getIndex);
 }
