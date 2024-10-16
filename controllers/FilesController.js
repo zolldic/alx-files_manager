@@ -99,5 +99,7 @@ const FileController = {
       parentId,
     });
   },
+  async getShow(req, res) {}
+  async getIndex(req, res) {}
 };
 export default FileController;
